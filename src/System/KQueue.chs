@@ -4,6 +4,9 @@ module System.KQueue where
 #include <sys/event.h>
 
 import Control.Applicative
+import Data.Bits
+import Data.List
+import Data.Maybe
 import Foreign
 import Foreign.C
 
@@ -16,13 +19,44 @@ kqueue :: IO KQueue
 kqueue = KQueue <$> kqueue_
 
 data KEvent = KEvent
-  { ident  :: CULong
-  , filter :: CShort
-  , flags  :: CUShort
-  , fflags :: CUInt
-  , data_  :: CLong
-  , udata  :: Ptr ()
+  { ident  :: CULong -- TODO
+  , filter :: CShort -- TODO
+  , flags  :: [Flag]
+  , fflags :: CUInt -- TODO
+  , data_  :: CLong -- TODO
+  , udata  :: Ptr () -- TODO
   }
+
+#c
+enum Flag
+  { EvAdd      = EV_ADD
+  , EvEnable   = EV_ENABLE
+  , EvDisable  = EV_DISABLE
+// Not on Mac OS X
+//  , EvDispatch = EV_DISPATCH
+  , EvDelete   = EV_DELETE
+  , EvReceipt  = EV_RECEIPT
+  , EvOneshot  = EV_ONESHOT
+  , EvClear    = EV_CLEAR
+  , EvEof      = EV_EOF
+  , EvError    = EV_ERROR
+  };
+#endc
+
+{#enum Flag {}#}
+
+-- | Convert a list of enumeration values to an integer by combining
+-- them with bitwise 'or'.
+enumToBitmask :: Enum a => [a] -> Int
+enumToBitmask = foldl' (.|.) 0 . map fromEnum
+
+-- | Convert an integer to a list of enumeration values by testing
+-- each bit, and if set, convert it to an enumeration member.
+bitmaskToEnum :: Enum a => Int -> [a]
+bitmaskToEnum bm = mapMaybe maybeBit [0 .. bitSize bm - 1]
+  where
+    maybeBit b | testBit bm b = Just . toEnum . bit $ b
+               | otherwise    = Nothing
 
 #c
 typedef struct kevent kevent_t;
@@ -33,7 +67,7 @@ instance Storable KEvent where
   alignment _ = 24
   peek e = KEvent <$> ({#get kevent_t->ident  #} e)
                   <*> ({#get kevent_t->filter #} e)
-                  <*> ({#get kevent_t->flags  #} e)
+                  <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->flags  #} e)
                   <*> ({#get kevent_t->fflags #} e)
                   <*> ({#get kevent_t->data  #} e)
                   <*> ({#get kevent_t->udata  #} e)
