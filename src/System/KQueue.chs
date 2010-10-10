@@ -20,12 +20,28 @@ kqueue = KQueue <$> kqueue_
 
 data KEvent = KEvent
   { ident  :: CULong -- TODO
-  , filter :: CShort -- TODO
+  , filter :: Filter
   , flags  :: [Flag]
   , fflags :: CUInt -- TODO
   , data_  :: CLong -- TODO
   , udata  :: Ptr () -- TODO
   }
+
+#c
+enum Filter
+  { EvfiltRead = EVFILT_READ
+  , EvfiltWrite = EVFILT_WRITE
+  , EvfiltAio = EVFILT_AIO
+  , EvfiltVnode = EVFILT_VNODE
+  , EvfiltProc = EVFILT_PROC
+  , EvfiltSignal = EVFILT_SIGNAL
+  , EvfiltTimer = EVFILT_TIMER
+// Not on Mac OS X
+// , EvfiltUser = EVFILT_USER
+  };
+#endc
+
+{#enum Filter {}#}
 
 #c
 enum Flag
@@ -66,7 +82,7 @@ instance Storable KEvent where
   sizeOf _ = {#sizeof kevent_t #}
   alignment _ = 24
   peek e = KEvent <$> ({#get kevent_t->ident  #} e)
-                  <*> ({#get kevent_t->filter #} e)
+                  <*> fmap (toEnum . fromIntegral) ({#get kevent_t->filter #} e)
                   <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->flags  #} e)
                   <*> ({#get kevent_t->fflags #} e)
                   <*> ({#get kevent_t->data  #} e)
