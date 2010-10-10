@@ -1,0 +1,35 @@
+Name:                kqueue
+Version:             0.1
+Synopsis:            A binding to the kqueue event library.
+Description:         A low-level binding to the kqueue library as
+                     found in BSD and Mac OS X. It provides, among
+                     other things, a way of monitoring files and
+                     directories for changes.
+Homepage:            http://github.com/hesselink/kqueue
+License:             BSD3
+License-file:        LICENSE
+Author:              Erik Hesselink
+Maintainer:          hesselink@gmail.com
+Category:            System
+Build-type:          Simple
+
+-- Extra files to be distributed with the package, such as examples or
+-- a README.
+-- Extra-source-files:  
+
+-- Constraint on the version of Cabal needed to build this package.
+Cabal-version:       >=1.2
+
+
+Library
+  Hs-Source-Dirs:      src
+  Exposed-modules:     System.KQueue
+  Build-depends:       base == 4.*
+  
+  -- Modules not exported by this package.
+  -- Other-modules:       
+  
+  Build-tools:         c2hs
+  Extra-Libraries:     c
+  Include-dirs:        /System/Library/Frameworks/Kernel.framework/Versions/A/Headers/sys/
+  Includes:            event.h
