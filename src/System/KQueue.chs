@@ -92,7 +92,9 @@ data TimeSpec
 
 foreign import ccall "kevent" kevent_ :: CInt -> Ptr KEvent -> CInt -> Ptr KEvent -> CInt -> Ptr TimeSpec -> IO CInt
 
-kevent :: KQueue -> [KEvent] -> [KEvent] -> TimeSpec -> IO ()
-kevent (KQueue kq) changelist eventlist timespec = do
-  kevent_ kq undefined undefined undefined undefined undefined
-  return ()
+kevent :: KQueue -> [KEvent] -> Int -> TimeSpec -> IO [KEvent]
+kevent (KQueue kq) changelist nevents timespec =
+  withArray changelist $ \chArray ->
+  allocaArray nevents  $ \evArray ->
+    do ret <- kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) undefined
+       peekArray nevents evArray
