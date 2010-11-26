@@ -25,7 +25,7 @@ data KEvent = KEvent
   , fflags   :: [FFlag]
   , data_    :: CLong -- TODO
   , udata    :: Ptr () -- TODO
-  }
+  } deriving (Show, Eq)
 
 #c
 enum Filter
@@ -41,7 +41,7 @@ enum Filter
   };
 #endc
 
-{#enum Filter {}#}
+{#enum Filter {} deriving (Show, Eq) #}
 
 #c
 enum Flag
@@ -59,7 +59,7 @@ enum Flag
   };
 #endc
 
-{#enum Flag {}#}
+{#enum Flag {} deriving (Show, Eq) #}
 
 #c
 enum FFlag
