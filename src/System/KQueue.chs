@@ -19,12 +19,12 @@ kqueue :: IO KQueue
 kqueue = KQueue <$> kqueue_
 
 data KEvent = KEvent
-  { ident  :: CULong -- TODO
-  , filter :: Filter
-  , flags  :: [Flag]
-  , fflags :: [FFlag]
-  , data_  :: CLong -- TODO
-  , udata  :: Ptr () -- TODO
+  { ident    :: CULong -- TODO
+  , evfilter :: Filter
+  , flags    :: [Flag]
+  , fflags   :: [FFlag]
+  , data_    :: CLong -- TODO
+  , udata    :: Ptr () -- TODO
   }
 
 #c
