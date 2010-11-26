@@ -33,3 +33,4 @@ Library
   Extra-Libraries:     c
   Include-dirs:        /System/Library/Frameworks/Kernel.framework/Versions/A/Headers/sys/
   Includes:            event.h
+  GHC-Options:         -Wall
