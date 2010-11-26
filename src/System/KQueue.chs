@@ -108,6 +108,13 @@ instance Storable KEvent where
                   <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->fflags #} e)
                   <*> ({#get kevent_t->data  #} e)
                   <*> ({#get kevent_t->udata  #} e)
+  poke e ev =
+    do {#set kevent_t->ident#} e (ident ev)
+       {#set kevent_t->filter#} e (fromIntegral . fromEnum . evfilter $ ev)
+       {#set kevent_t->flags#} e (fromIntegral . enumToBitmask . flags $ ev)
+       {#set kevent_t->fflags#} e (fromIntegral . enumToBitmask . fflags $ ev)
+       {#set kevent_t->data#} e (data_ ev)
+       {#set kevent_t->udata#} e (udata ev)
 
 data TimeSpec
 
