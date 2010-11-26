@@ -22,7 +22,7 @@ data KEvent = KEvent
   { ident  :: CULong -- TODO
   , filter :: Filter
   , flags  :: [Flag]
-  , fflags :: CUInt -- TODO
+  , fflags :: [FFlag]
   , data_  :: CLong -- TODO
   , udata  :: Ptr () -- TODO
   }
@@ -61,6 +61,27 @@ enum Flag
 
 {#enum Flag {}#}
 
+#c
+enum FFlag
+  { NoteDelete = NOTE_DELETE
+  , NoteWrite  = NOTE_WRITE
+  , NoteExtend = NOTE_EXTEND
+  , NoteAttrib = NOTE_ATTRIB
+  , NoteLink   = NOTE_LINK
+  , NoteRename = NOTE_RENAME
+  , NoteRevoke = NOTE_REVOKE
+// Seems to have the same value as NoteDelete
+//  , NoteLowat  = NOTE_LOWAT
+  , NoteExit   = NOTE_EXIT
+  , NoteFork   = NOTE_FORK
+  , NoteExec   = NOTE_EXEC
+  , NoteSignal = NOTE_SIGNAL
+  , NoteReap   = NOTE_REAP
+  };
+#endc
+
+{#enum FFlag {} deriving (Show, Eq) #}
+
 -- | Convert a list of enumeration values to an integer by combining
 -- them with bitwise 'or'.
 enumToBitmask :: Enum a => [a] -> Int
@@ -84,7 +105,7 @@ instance Storable KEvent where
   peek e = KEvent <$> ({#get kevent_t->ident  #} e)
                   <*> fmap (toEnum . fromIntegral) ({#get kevent_t->filter #} e)
                   <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->flags  #} e)
-                  <*> ({#get kevent_t->fflags #} e)
+                  <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->fflags #} e)
                   <*> ({#get kevent_t->data  #} e)
                   <*> ({#get kevent_t->udata  #} e)
 
