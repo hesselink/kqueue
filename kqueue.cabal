@@ -13,6 +13,7 @@ Maintainer:          hesselink@gmail.com
 Category:            System
 Build-type:          Simple
 Cabal-version:       >=1.6
+Extra-source-files:  examples/MonitorFile.hs
 
 Library
   Hs-Source-Dirs:      src
