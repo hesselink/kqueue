@@ -12,23 +12,12 @@ Author:              Erik Hesselink
 Maintainer:          hesselink@gmail.com
 Category:            System
 Build-type:          Simple
-
--- Extra files to be distributed with the package, such as examples or
--- a README.
--- Extra-source-files:  
-
--- Constraint on the version of Cabal needed to build this package.
 Cabal-version:       >=1.6
-
 
 Library
   Hs-Source-Dirs:      src
   Exposed-modules:     System.KQueue
   Build-depends:       base == 4.*
-  
-  -- Modules not exported by this package.
-  -- Other-modules:       
-  
   Build-tools:         c2hs
   Extra-Libraries:     c
   Include-dirs:        /System/Library/Frameworks/Kernel.framework/Versions/A/Headers/sys/
