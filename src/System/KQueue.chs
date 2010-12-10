@@ -1,12 +1,14 @@
-{-# LANGUAGE ForeignFunctionInterface, EmptyDataDecls #-}
+{-# LANGUAGE ForeignFunctionInterface, EmptyDataDecls, DeriveDataTypeable #-}
 module System.KQueue where
 
 #include <sys/event.h>
 
 import Control.Applicative
+import Control.Exception
 import Data.Bits
 import Data.List
 import Data.Maybe
+import Data.Typeable
 import Foreign
 import Foreign.C
 
@@ -120,10 +122,22 @@ data TimeSpec
 
 foreign import ccall "kevent" kevent_ :: CInt -> Ptr KEvent -> CInt -> Ptr KEvent -> CInt -> Ptr TimeSpec -> IO CInt
 
+data KQueueException = KQueueException
+  deriving (Show, Typeable)
+
+instance Exception KQueueException
+
 kevent :: KQueue -> [KEvent] -> Int -> TimeSpec -> IO [KEvent]
 kevent (KQueue kq) changelist nevents _ = -- TODO: use timespec
   withArray changelist $ \chArray ->
   allocaArray nevents  $ \evArray ->
-    do _ <- kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) nullPtr
-       -- TODO: throw exception on non-0 return value.
-       peekArray nevents evArray
+    do ret <- kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) nullPtr
+       case ret of
+         -- Error while processing changelist, and no room in return array.
+         -1 -> throwIO KQueueException
+         -- Timeout.
+         0  -> return []
+         -- Returned n events. Can contain errors. The change that
+         -- failed will be in the event list. EV_ERROR will be set on the
+         -- event.
+         n  -> peekArray (fromIntegral n) evArray
