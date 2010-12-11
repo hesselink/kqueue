@@ -3,14 +3,14 @@ import Foreign.Ptr
 import System.KQueue
 import System.Posix.IO
 
--- Monitor /tmp/foo for changes until it is deleted. Prints the events
--- as they are received. The file has to exist when this program is
--- started.
+-- Monitor file 'foo for changes until it is deleted. Prints the
+-- events as they are received. The file has to exist when this
+-- program is started.
 main = do
   -- Initialize the queue.
   kq <- kqueue
   -- Open file descriptor.
-  fd <- openFd "/tmp/foo" ReadOnly Nothing defaultFileFlags
+  fd <- openFd "foo" ReadOnly Nothing defaultFileFlags
   -- Construct the event to monitor.
   let event = KEvent
         { ident = fromIntegral fd
