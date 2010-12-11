@@ -19,5 +19,6 @@ Library
   Hs-Source-Dirs:      src
   Exposed-modules:     System.KQueue
   Build-depends:       base == 4.*
+                     , time >= 1.1 && < 1.3
   Build-tools:         c2hs
   GHC-Options:         -Wall

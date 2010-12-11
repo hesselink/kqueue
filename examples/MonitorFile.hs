@@ -22,7 +22,7 @@ main = do
         }
   let poll = do
         -- Add or poll the event.
-        chgs <- kevent kq [event] 1 undefined
+        chgs <- kevent kq [event] 1 Nothing
         -- If something happened, print it.
         when (not . null $ chgs) (print chgs)
         -- If the file was deleted, stop. Otherwise, continue polling.
