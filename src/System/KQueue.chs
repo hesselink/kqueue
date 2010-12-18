@@ -1,18 +1,47 @@
-{-# LANGUAGE ForeignFunctionInterface, EmptyDataDecls, DeriveDataTypeable #-}
-module System.KQueue where
+{-# LANGUAGE DeriveDataTypeable
+           , EmptyDataDecls
+           , ForeignFunctionInterface
+           #-}
+module System.KQueue
+  ( KQueue
+  , kqueue
+  , KEvent (..)
+  , Filter (..)
+  , Flag (..)
+  , FFlag (..)
+  , kevent
+  , KQueueException
+  ) where
 
 #include <sys/time.h>
 #include <sys/event.h>
 
-import Control.Applicative
-import Control.Exception
-import Data.Bits
-import Data.List
-import Data.Maybe
-import Data.Time.Clock
-import Data.Typeable
-import Foreign
-import Foreign.C
+import Control.Applicative ( (<$>), (<*>) )
+import Control.Exception   ( Exception, throwIO )
+import Data.List           ( foldl' )
+import Data.Maybe          ( mapMaybe )
+import Data.Time.Clock     ( NominalDiffTime )
+import Data.Typeable       ( Typeable )
+import Foreign             ( (.|.)
+                           , Ptr
+                           , Storable (..)
+                           , allocaArray
+                           , bit
+                           , bitSize
+                           , maybeWith
+                           , testBit
+                           , peekArray
+                           , with
+                           , withArray
+                           )
+import Foreign.C           ( CInt
+                           , CLong
+                           , CShort
+                           , CTime
+                           , CUInt
+                           , CULong
+                           , CUShort
+                           )
 
 -- | A kernel event queue.
 newtype KQueue = KQueue CInt -- The descriptor
