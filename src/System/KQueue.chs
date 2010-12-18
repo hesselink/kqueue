@@ -46,17 +46,21 @@ import Foreign.C           ( CInt
 -- | A kernel event queue.
 newtype KQueue = KQueue CInt -- The descriptor
 
+-- | Create a new KQueue.
 kqueue :: IO KQueue
 kqueue = KQueue <$> {#call kqueue as kqueue_ #}
 
+-- | A kernel event.
 data KEvent = KEvent
-  { ident    :: CULong -- TODO
-  , evfilter :: Filter
-  , flags    :: [Flag]
-  , fflags   :: [FFlag]
-  , data_    :: CLong -- TODO
-  , udata    :: Ptr () -- TODO
+  { ident    :: CULong  -- ^ The identifier for the event, often a file descriptor.
+  , evfilter :: Filter  -- ^ The kernel filter (type of event).
+  , flags    :: [Flag]  -- ^ Actions to perform on the event.
+  , fflags   :: [FFlag] -- ^ Filter-specific flags.
+  , data_    :: CLong   -- ^ Filter-specific data value.
+  , udata    :: Ptr ()  -- ^ User-defined data, passed through unchanged.
   } deriving (Show, Eq)
+
+-- TODO: nicer types for ident, data_ and udata.
 
 #c
 enum Filter
@@ -72,6 +76,7 @@ enum Filter
   };
 #endc
 
+-- | The types of kernel events.
 {#enum Filter {} deriving (Show, Eq) #}
 
 #c
@@ -90,6 +95,7 @@ enum Flag
   };
 #endc
 
+-- | The actions to perform on the event.
 {#enum Flag {} deriving (Show, Eq) #}
 
 #c
@@ -111,6 +117,7 @@ enum FFlag
   };
 #endc
 
+-- | The filter specific flags.
 {#enum FFlag {} deriving (Show, Eq) #}
 
 -- | Convert a list of enumeration values to an integer by combining
@@ -181,7 +188,15 @@ data KQueueException = KQueueException
 
 instance Exception KQueueException
 
-kevent :: KQueue -> [KEvent] -> Int -> Maybe NominalDiffTime -> IO [KEvent]
+-- | Add events to monitor, or retrieve events from the kqueue. If an
+-- error occurs, will throw a 'KQueueException' if there is no room in
+-- the returned event list. Otherwise, will set 'EvError' on the event
+-- and add it to the returned event list.
+kevent ::  KQueue               -- ^ The kernel queue to operate on.
+       -> [KEvent]              -- ^ The list of events to start monitoring, or changes to retrieve.
+       -> Int                   -- ^ The maximum number of events to retrieve.
+       -> Maybe NominalDiffTime -- ^ Timeout. When nothing, blocks until an event has occurred.
+       -> IO [KEvent]           -- ^ A list of events that have occurred.
 kevent (KQueue kq) changelist nevents mtimeout =
   withArray changelist $ \chArray ->
   allocaArray nevents  $ \evArray ->
