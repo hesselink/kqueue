@@ -14,6 +14,7 @@ Category:            System
 Build-type:          Simple
 Cabal-version:       >=1.6
 Extra-source-files:  examples/MonitorFile.hs
+                     examples/MonitorDirectory.hs
 
 Library
   Hs-Source-Dirs:      src
