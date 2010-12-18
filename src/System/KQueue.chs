@@ -17,10 +17,8 @@ import Foreign.C
 -- | A kernel event queue.
 newtype KQueue = KQueue CInt -- The descriptor
 
-foreign import ccall "kqueue" kqueue_ :: IO CInt
-
 kqueue :: IO KQueue
-kqueue = KQueue <$> kqueue_
+kqueue = KQueue <$> {#call kqueue as kqueue_ #}
 
 data KEvent = KEvent
   { ident    :: CULong -- TODO
