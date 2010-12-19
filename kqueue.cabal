@@ -19,7 +19,12 @@ Extra-source-files:  examples/MonitorFile.hs
 Library
   Hs-Source-Dirs:      src
   Exposed-modules:     System.KQueue
+                       System.KQueue.HighLevel
   Build-depends:       base == 4.*
+                     , directory == 1.0.*
+                     , filepath == 1.1.*
+                     , mtl == 2.0.*
                      , time >= 1.1 && < 1.3
+                     , unix == 2.4.*
   Build-tools:         c2hs
   GHC-Options:         -Wall
