@@ -1,3 +1,5 @@
+-- | This module contains higher-level abstraction for monitoring file
+-- system changes, built on top of the bindings from "System.KQueue".
 module System.KQueue.HighLevel
   ( watchFile
   , stopWatching

@@ -2,6 +2,12 @@
            , EmptyDataDecls
            , ForeignFunctionInterface
            #-}
+-- | This module contains a low-level binding to the kqueue interface.
+-- It stays close to the C API, changing the types to more native
+-- Haskell types, but not significantly changing it.
+-- See the kqueue man page or the examples in @examples/@ for usage
+-- information.
+-- For a higher-level binding, see "System.KQueue.HighLevel".
 module System.KQueue
   ( KQueue
   , kqueue
