@@ -154,10 +154,8 @@ instance Storable KEvent where
        {#set kevent_t->data   #} e (data_                                   ev)
        {#set kevent_t->udata  #} e (udata                                   ev)
 
-data TimeSpec = TimeSpec
-  { seconds     :: CTime
-  , nanoseconds :: CLong
-  } deriving (Show, Eq)
+newtype TimeSpec = TimeSpec NominalDiffTime
+  deriving (Show, Eq)
 
 #c
 typedef struct timespec timespec_t;
@@ -167,19 +165,16 @@ typedef struct timespec timespec_t;
 instance Storable TimeSpec where
   sizeOf _ = {#sizeof timespec_t #}
   alignment _ = 8
-  peek t = TimeSpec <$> (\ptr -> peekByteOff ptr 0 :: IO CTime)  t
-                    <*> {#get timespec_t->tv_nsec #} t
-  poke t ts =
-    do (\ptr val -> pokeByteOff ptr 0 (val :: CTime)) t (seconds $ ts)
-       {#set timespec_t->tv_nsec #} t (nanoseconds            ts)
-
-nominalDiffTimeToTimeSpec :: NominalDiffTime -> TimeSpec
-nominalDiffTimeToTimeSpec dt = TimeSpec
-  { seconds     = fromInteger s
-  , nanoseconds = floor . (* 1000000000) $ ns
-  }
-  where
-    (s, ns) = properFraction dt
+  peek t =  mkTimeSpec
+        <$> (\ptr -> peekByteOff ptr 0 :: IO CTime)  t
+        <*> {#get timespec_t->tv_nsec #} t
+    where
+      mkTimeSpec s ns = TimeSpec $ realToFrac s + realToFrac ns/1000000000
+  poke t (TimeSpec dt) =
+    do (\ptr val -> pokeByteOff ptr 0 (val :: CTime)) t (fromInteger s)
+       {#set timespec_t->tv_nsec #} t (floor . (* 1000000000) $ ns)
+    where
+      (s, ns) = properFraction dt
 
 foreign import ccall "kevent" kevent_ :: CInt -> Ptr KEvent -> CInt -> Ptr KEvent -> CInt -> Ptr TimeSpec -> IO CInt
 
@@ -200,7 +195,7 @@ kevent ::  KQueue               -- ^ The kernel queue to operate on.
 kevent (KQueue kq) changelist nevents mtimeout =
   withArray changelist $ \chArray ->
   allocaArray nevents  $ \evArray ->
-  maybeWith with (nominalDiffTimeToTimeSpec <$> mtimeout) $ \timeout ->
+  maybeWith with (TimeSpec <$> mtimeout) $ \timeout ->
     do ret <- kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) timeout
        case ret of
          -- Error while processing changelist, and no room in return array.
