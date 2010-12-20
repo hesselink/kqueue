@@ -7,15 +7,16 @@ module System.KQueue.HighLevel
   , Watcher
   ) where
 
-import Control.Concurrent
-import Control.Monad.State
-import Data.List
-import Foreign.Ptr
-import System.Directory
-import System.FilePath
+import Control.Concurrent  (ThreadId, forkIO, killThread)
+import Control.Monad.State (StateT, evalStateT, forever, get, liftIO, liftM, put, when)
+import Data.List           (intersect)
+import Foreign.Ptr         (nullPtr)
+import System.Directory    (canonicalizePath, doesFileExist)
+import System.FilePath     (takeDirectory)
+import System.Posix.IO     (OpenMode (ReadOnly), defaultFileFlags, openFd)
+import System.Posix.Types  (Fd)
+
 import System.KQueue
-import System.Posix.IO
-import System.Posix.Types
 
 -- | The type of file change that occurred.
 data EventType = Changed | Created | Deleted deriving Show
