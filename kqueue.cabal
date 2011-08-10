@@ -28,3 +28,7 @@ Library
                      , unix >= 2.3 && < 2.6
   Build-tools:         c2hs
   GHC-Options:         -Wall
+
+Source-Repository head
+  Type:                git
+  Location:            git://github.com/hesselink/kqueue.git
