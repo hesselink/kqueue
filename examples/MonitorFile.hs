@@ -16,7 +16,7 @@ main = do
         { ident = fromIntegral fd
         , evfilter = EvfiltVnode
         , flags = [EvAdd, EvOneshot]
-        , fflags = [NoteDelete, NoteExtend, NoteWrite, NoteAttrib, NoteRename]
+        , fflags = [NoteDelete, NoteExtend, NoteWrite, NoteAttrib, NoteRename, NoteLink, NoteRevoke]
         , data_ = 0
         , udata = nullPtr
         }
