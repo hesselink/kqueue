@@ -40,8 +40,12 @@ import Foreign             ( (.|.)
                            , with
                            , withArray
                            )
-import Foreign.C           ( CInt
-                           , CLong
+#if __GLASGOW_HASKELL__ >= 704
+import Foreign.C           ( CInt (..) )
+#else
+import Foreign.C           ( CInt )
+#endif
+import Foreign.C           ( CLong
                            , CShort
                            , CTime
                            , CUInt
