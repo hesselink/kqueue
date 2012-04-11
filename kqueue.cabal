@@ -1,5 +1,5 @@
 Name:                kqueue
-Version:             0.1.2.2
+Version:             0.1.2.3
 Synopsis:            A binding to the kqueue event library.
 Description:         A low-level binding to the kqueue library as
                      found in BSD and Mac OS X. It provides, among
@@ -23,7 +23,7 @@ Library
   Build-depends:       base >= 4.0 && < 4.6
                      , directory >= 1.0 && < 1.3
                      , filepath >= 1.1 && < 1.4
-                     , mtl >= 1.1 && < 2.1
+                     , mtl >= 1.1 && < 2.2
                      , time >= 1.1 && < 1.5
                      , unix >= 2.3 && < 2.6
   Build-tools:         c2hs
