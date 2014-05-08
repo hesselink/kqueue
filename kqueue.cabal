@@ -23,7 +23,7 @@ Library
   Build-depends:       base >= 4.0 && < 4.8
                      , directory >= 1.0 && < 1.4
                      , filepath >= 1.1 && < 1.4
-                     , mtl >= 1.1 && < 2.2
+                     , mtl >= 1.1 && < 2.3
                      , time >= 1.1 && < 1.5
                      , unix >= 2.3 && < 2.8
   Build-tools:         c2hs
