@@ -1,5 +1,5 @@
 Name:                kqueue
-Version:             0.1.2.5
+Version:             0.1.2.6
 Synopsis:            A binding to the kqueue event library.
 Description:         A low-level binding to the kqueue library as
                      found in BSD and Mac OS X. It provides, among
@@ -15,6 +15,7 @@ Build-type:          Simple
 Cabal-version:       >=1.6
 Extra-source-files:  examples/MonitorFile.hs
                      examples/MonitorDirectory.hs
+                     CHANGELOG.md
 
 Library
   Hs-Source-Dirs:      src
