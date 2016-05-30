@@ -22,7 +22,9 @@ module System.KQueue
 #include <sys/time.h>
 #include <sys/event.h>
 
+#if __GLASGOW_HASKELL__ <= 708
 import Control.Applicative ( (<$>), (<*>) )
+#endif
 import Control.Exception   ( Exception, throwIO )
 import Data.List           ( foldl' )
 import Data.Maybe          ( mapMaybe )
@@ -40,17 +42,21 @@ import Foreign             ( (.|.)
                            , with
                            , withArray
                            )
-#if __GLASGOW_HASKELL__ >= 704
+
+#if __GLASGOW_HASKELL__ >= 710
 import Foreign.C           ( CInt (..) )
+#elif __GLASGOW_HASKELL__ >= 704
+import Foreign.C           ( CInt (..)
+                           , CShort
+                           , CUInt
+                           , CUShort
+                           )
 #else
 import Foreign.C           ( CInt )
 #endif
 import Foreign.C           ( CLong
-                           , CShort
                            , CTime
-                           , CUInt
                            , CULong
-                           , CUShort
                            )
 
 -- | A kernel event queue.
