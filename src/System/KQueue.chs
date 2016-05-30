@@ -33,7 +33,7 @@ import Foreign             ( (.|.)
                            , Storable (..)
                            , allocaArray
                            , bit
-                           , bitSize
+                           , finiteBitSize
                            , maybeWith
                            , testBit
                            , peekArray
@@ -138,7 +138,7 @@ enumToBitmask = foldl' (.|.) 0 . map fromEnum
 -- | Convert an integer to a list of enumeration values by testing
 -- each bit, and if set, convert it to an enumeration member.
 bitmaskToEnum :: Enum a => Int -> [a]
-bitmaskToEnum bm = mapMaybe maybeBit [0 .. bitSize bm - 1]
+bitmaskToEnum bm = mapMaybe maybeBit [0 .. finiteBitSize bm - 1]
   where
     maybeBit b | testBit bm b = Just . toEnum . bit $ b
                | otherwise    = Nothing
