@@ -123,7 +123,7 @@ enum FFlag
   , NoteFork   = NOTE_FORK
   , NoteExec   = NOTE_EXEC
   , NoteSignal = NOTE_SIGNAL
-  , NoteReap   = NOTE_REAP
+//  , NoteReap   = NOTE_REAP
   };
 #endc
 
