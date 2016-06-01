@@ -25,7 +25,7 @@ module System.KQueue
 #if __GLASGOW_HASKELL__ <= 708
 import Control.Applicative ( (<$>), (<*>) )
 #endif
-import Control.Exception   ( Exception, throwIO )
+import Control.Exception   ( Exception, bracket_, throwIO )
 import Data.List           ( foldl' )
 import Data.Maybe          ( mapMaybe )
 import Data.Time.Clock     ( NominalDiffTime )
@@ -58,6 +58,10 @@ import Foreign.C           ( CLong
                            , CTime
                            , CULong
                            )
+import System.Posix.Signals ( blockSignals
+                            , reservedSignals
+                            , unblockSignals
+                            )
 
 -- | A kernel event queue.
 newtype KQueue = KQueue CInt -- The descriptor
@@ -211,14 +215,17 @@ kevent ::  KQueue               -- ^ The kernel queue to operate on.
 kevent (KQueue kq) changelist nevents mtimeout =
   withArray changelist $ \chArray ->
   allocaArray nevents  $ \evArray ->
-  maybeWith with (TimeSpec <$> mtimeout) $ \timeout ->
-    do ret <- kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) timeout
-       case ret of
-         -- Error while processing changelist, and no room in return array.
-         -1 -> throwIO KQueueException
-         -- Timeout.
-         0  -> return []
-         -- Returned n events. Can contain errors. The change that
-         -- failed will be in the event list. EV_ERROR will be set on the
-         -- event.
-         n  -> peekArray (fromIntegral n) evArray
+  maybeWith with (TimeSpec <$> mtimeout) $ \timeout -> do
+    ret <- bracket_
+      (blockSignals reservedSignals)
+      (unblockSignals reservedSignals)
+      (kevent_ kq chArray (fromIntegral . length $ changelist) evArray (fromIntegral nevents) timeout)
+    case ret of
+      -- Error while processing changelist, and no room in return array.
+      -1 -> throwIO KQueueException
+      -- Timeout.
+      0  -> return []
+      -- Returned n events. Can contain errors. The change that
+      -- failed will be in the event list. EV_ERROR will be set on the
+      -- event.
+      n  -> peekArray (fromIntegral n) evArray
