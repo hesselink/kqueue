@@ -25,7 +25,7 @@ Library
                      , directory >= 1.0 && < 1.4
                      , filepath >= 1.1 && < 1.5
                      , mtl >= 1.1 && < 2.3
-                     , time >= 1.1 && < 1.7
+                     , time >= 1.1 && < 1.8
                      , unix >= 2.3 && < 2.8
   Build-tools:         c2hs
   GHC-Options:         -Wall
