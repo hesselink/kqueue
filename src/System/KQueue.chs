@@ -126,9 +126,7 @@ enum FFlag
   , NoteAttrib = NOTE_ATTRIB
   , NoteLink   = NOTE_LINK
   , NoteRename = NOTE_RENAME
-#ifndef __linux__
   , NoteRevoke = NOTE_REVOKE
-#endif
 // Seems to have the same value as NoteDelete
 //  , NoteLowat  = NOTE_LOWAT
   , NoteExit   = NOTE_EXIT
