@@ -12,7 +12,7 @@ Author:              Erik Hesselink
 Maintainer:          hesselink@gmail.com
 Category:            System
 Build-type:          Simple
-Cabal-version:       >=1.6
+Cabal-version:       >=1.10
 Extra-source-files:  examples/MonitorFile.hs
                      examples/MonitorDirectory.hs
                      CHANGELOG.md
@@ -29,6 +29,7 @@ Library
                      , unix >= 2.3 && < 2.8
   Build-tools:         c2hs
   GHC-Options:         -Wall
+  Default-language:    Haskell2010
 
 Source-Repository head
   Type:                git
