@@ -19,6 +19,7 @@ module System.KQueue
   , KQueueException
   ) where
 
+#include <sys/types.h>
 #include <sys/time.h>
 #include <sys/event.h>
 
