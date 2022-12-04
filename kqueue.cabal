@@ -21,7 +21,7 @@ Library
   Hs-Source-Dirs:      src
   Exposed-modules:     System.KQueue
                        System.KQueue.HighLevel
-  Build-depends:       base >= 4.0 && < 4.15
+  Build-depends:       base >= 4.0 && < 5
                      , directory >= 1.0 && < 1.4
                      , filepath >= 1.1 && < 1.5
                      , mtl >= 1.1 && < 2.3
