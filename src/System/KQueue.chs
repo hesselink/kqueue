@@ -167,7 +167,7 @@ typedef struct kevent kevent_t;
 
 instance Storable KEvent where
   sizeOf _ = {#sizeof kevent_t #}
-  alignment _ = 24
+  alignment _ = 32
   peek e = KEvent <$>                                     ({#get kevent_t->ident  #} e)
                   <*> fmap (toEnum . fromIntegral)        ({#get kevent_t->filter #} e)
                   <*> fmap (bitmaskToEnum . fromIntegral) ({#get kevent_t->flags  #} e)
