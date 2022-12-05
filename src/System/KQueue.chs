@@ -56,6 +56,7 @@ import Foreign.C           ( CInt (..)
 import Foreign.C           ( CInt )
 #endif
 import Foreign.C           ( CLong
+                           , CLLong
                            , CTime
                            , CULong
                            )
@@ -77,7 +78,7 @@ data KEvent = KEvent
   , evfilter :: Filter  -- ^ The kernel filter (type of event).
   , flags    :: [Flag]  -- ^ Actions to perform on the event.
   , fflags   :: [FFlag] -- ^ Filter-specific flags.
-  , data_    :: CLong   -- ^ Filter-specific data value.
+  , data_    :: CLLong   -- ^ Filter-specific data value.
   , udata    :: Ptr ()  -- ^ User-defined data, passed through unchanged.
   } deriving (Show, Eq)
 
@@ -92,8 +93,9 @@ enum Filter
   , EvfiltProc = EVFILT_PROC
   , EvfiltSignal = EVFILT_SIGNAL
   , EvfiltTimer = EVFILT_TIMER
-// Not on Mac OS X
-// , EvfiltUser = EVFILT_USER
+#ifdef EVFILT_USER
+  , EvfiltUser = EVFILT_USER
+#endif
   };
 #endc
 
@@ -105,8 +107,9 @@ enum Flag
   { EvAdd      = EV_ADD
   , EvEnable   = EV_ENABLE
   , EvDisable  = EV_DISABLE
-// Not on Mac OS X
-//  , EvDispatch = EV_DISPATCH
+#ifdef EV_DISPATCH
+  , EvDispatch = EV_DISPATCH
+#endif
   , EvDelete   = EV_DELETE
   , EvReceipt  = EV_RECEIPT
   , EvOneshot  = EV_ONESHOT
@@ -128,13 +131,18 @@ enum FFlag
   , NoteLink   = NOTE_LINK
   , NoteRename = NOTE_RENAME
   , NoteRevoke = NOTE_REVOKE
-// Seems to have the same value as NoteDelete
-//  , NoteLowat  = NOTE_LOWAT
+#if NOTE_LOWA != NOTE_DELETE
+  , NoteLowat  = NOTE_LOWAT
+#endif
   , NoteExit   = NOTE_EXIT
   , NoteFork   = NOTE_FORK
   , NoteExec   = NOTE_EXEC
+#ifdef NOTE_SIGNAL
   , NoteSignal = NOTE_SIGNAL
-//  , NoteReap   = NOTE_REAP
+#endif
+#ifdef NOTE_REAP
+  , NoteReap   = NOTE_REAP
+#endif
   };
 #endc
 
