@@ -23,7 +23,7 @@ data EventType = Changed | Created | Deleted deriving Show
 
 -- | An identifier for the watcher of a file. Allows you to stop
 -- watching it later.
-newtype Watcher = Watcher ThreadId
+newtype Watcher = Watcher ThreadId deriving Show
 
 -- | Watch a file for changes. The file doesn't have to exist, but the
 -- directory it is in, does. Returns immediately. You can stop
