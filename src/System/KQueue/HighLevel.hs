@@ -8,7 +8,8 @@ module System.KQueue.HighLevel
   ) where
 
 import Control.Concurrent  (ThreadId, forkIO, killThread)
-import Control.Monad.State (StateT, evalStateT, forever, get, liftIO, liftM, put, when)
+import Control.Monad       (forever, when, liftM)
+import Control.Monad.State (StateT, evalStateT, get, liftIO, put)
 import Data.List           (intersect)
 import Foreign.Ptr         (nullPtr)
 import System.Directory    (canonicalizePath, doesFileExist)
@@ -45,7 +46,7 @@ stopWatching (Watcher tid) = killThread tid
 watchDirectoryForFile :: KQueue -> FilePath -> FilePath -> (EventType -> IO ()) -> IO ()
 watchDirectoryForFile kq dir file callback =
   do -- Event structures for the directory and file to monitor
-     dfd <- openFd dir ReadOnly Nothing defaultFileFlags
+     dfd <- openFd dir ReadOnly defaultFileFlags
      let dirEvent = KEvent
            { ident = fromIntegral dfd
            , evfilter = EvfiltVnode
@@ -67,7 +68,7 @@ watchDirectoryForFile kq dir file callback =
      exists <- doesFileExist file
      mFd <-
        if exists
-       then Just `liftM` openFd file ReadOnly Nothing defaultFileFlags
+       then Just `liftM` openFd file ReadOnly defaultFileFlags
        else return Nothing
      -- Add the event(s) to the queue.
      let eventsToAdd = dirEvent : maybe [] (return . mkFileEvent) mFd
@@ -109,7 +110,7 @@ monitorChangesIO kq dirEvent mkFileEvent callback file mFd =
        (True,  Nothing) -> -- The file was created.
          do callback Created
             -- Start monitoring it.
-            fd <- openFd file ReadOnly Nothing defaultFileFlags
+            fd <- openFd file ReadOnly defaultFileFlags
             _ <- kevent kq [setFlag EvAdd (mkFileEvent fd)] 0 Nothing
             return (Just fd)
        (False, Just fd) -> -- The file was deleted.
@@ -128,7 +129,7 @@ monitorChangesIO kq dirEvent mkFileEvent callback file mFd =
             -- Remove the event on the old file.
             _ <- kevent kq [setFlag EvDelete (mkFileEvent fd)] 0 Nothing
             -- Add the event on the new file.
-            newFd <- openFd file ReadOnly Nothing defaultFileFlags
+            newFd <- openFd file ReadOnly defaultFileFlags
             _ <- kevent kq [setFlag EvAdd (mkFileEvent newFd)] 0 Nothing
             return (Just newFd)
        -- A directory event, but not on the file we're interested

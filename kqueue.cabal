@@ -21,12 +21,12 @@ Library
   Hs-Source-Dirs:      src
   Exposed-modules:     System.KQueue
                        System.KQueue.HighLevel
-  Build-depends:       base >= 4.0 && < 4.15
+  Build-depends:       base >= 4.0 && < 4.19
                      , directory >= 1.0 && < 1.4
                      , filepath >= 1.1 && < 1.5
-                     , mtl >= 1.1 && < 2.3
+                     , mtl >= 1.1 && < 2.4
                      , time >= 1.1 && < 1.12
-                     , unix >= 2.3 && < 2.8
+                     , unix >= 2.3 && < 2.9
   Build-tools:         c2hs
   GHC-Options:         -Wall
   Default-language:    Haskell2010
